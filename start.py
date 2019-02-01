@@ -1,4 +1,4 @@
-# take 1 - not async
+# take 2 - not async
 import sys
 import time
 
@@ -40,3 +40,7 @@ if __name__ == '__main__':
             start_interval(focus_duration)
         print('Long break!')
         start_interval(long_break_duration)
+        if input('Another one? (y/any other key)\n') != 'y':
+            print('Good day!') 
+            break
+
