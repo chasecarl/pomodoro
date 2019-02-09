@@ -9,7 +9,7 @@ DEFAULT_SHORT_BREAK_DURATION = 5.0
 DEFAULT_LONG_BREAK_DURATION = 20.0
 SECS_IN_MIN = 60 
 
-POMODOROS_IN_SET = 1
+POMODOROS_IN_SET = 4
 
 def parse_args(argv):
     argc = len(argv)
@@ -33,6 +33,8 @@ def start_interval(duration, audio, eps=0.0001):
                 change_text = True
                 last_sec_check_time = timer_left
             if change_text:
+                # I don't use here timer_left but take current time instead because we captured it
+                # when it actually didn't change (since the last second)
                 print(time.strftime('\r%H:%M:%S', time.gmtime(timer_duration - time.time() + start_time)), end='')
                 change_text = False
     print()
