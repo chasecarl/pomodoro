@@ -1,4 +1,4 @@
-# take 4 (w/ sound) - not async
+# take 5 (w/ sound) - not async
 import sys
 import time
 import pygame
@@ -9,7 +9,7 @@ DEFAULT_SHORT_BREAK_DURATION = 5.0
 DEFAULT_LONG_BREAK_DURATION = 20.0
 SECS_IN_MIN = 60 
 
-POMODOROS_IN_SET = 4
+POMODOROS_IN_SET = 1
 
 def parse_args(argv):
     argc = len(argv)
@@ -19,15 +19,22 @@ def parse_args(argv):
            DEFAULT_SHORT_BREAK_DURATION if argc < 3 else float(argv[2]),\
            DEFAULT_LONG_BREAK_DURATION if argc < 4 else float(argv[3])
 
-def start_interval(duration, audio):
+def start_interval(duration, audio, eps=0.0001):
     timer_duration = math.floor(duration * SECS_IN_MIN)
+    last_sec_check_time = -1
+    change_text = False
     start_time = time.time()
     while True:
         timer_left = time.time() - start_time
-        if timer_left % 1 == 0:
-            print(time.strftime('\r%H:%M:%S', time.gmtime(timer_duration - timer_left)), end='')
         if timer_left >= timer_duration:
             break
+        if timer_left % 1 < eps:
+            if timer_left - last_sec_check_time > eps:
+                change_text = True
+                last_sec_check_time = timer_left
+            if change_text:
+                print(time.strftime('\r%H:%M:%S', time.gmtime(timer_duration - time.time() + start_time)), end='')
+                change_text = False
     print()
     if audio:
         pygame.mixer.music.play()
