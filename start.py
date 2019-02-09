@@ -19,7 +19,7 @@ def parse_args(argv):
            DEFAULT_SHORT_BREAK_DURATION if argc < 3 else float(argv[2]),\
            DEFAULT_LONG_BREAK_DURATION if argc < 4 else float(argv[3])
 
-def start_interval(duration, audio, eps=0.0001):
+def start_interval(duration, audio, eps=0.001):
     timer_duration = math.floor(duration * SECS_IN_MIN)
     last_sec_check_time = -1
     change_text = False
