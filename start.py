@@ -1,11 +1,13 @@
-# take 3 (w/ sound) - not async
+# take 4 (w/ sound) - not async
 import sys
 import time
 import pygame
+import math
 
 DEFAULT_FOCUS_DURATION = 25.0
 DEFAULT_SHORT_BREAK_DURATION = 5.0
 DEFAULT_LONG_BREAK_DURATION = 20.0
+SECS_IN_MIN = 60 
 
 POMODOROS_IN_SET = 4
 
@@ -18,10 +20,14 @@ def parse_args(argv):
            DEFAULT_LONG_BREAK_DURATION if argc < 4 else float(argv[3])
 
 def start_interval(duration, audio):
-    duration_time_secs = duration * 60
+    timer_duration = math.floor(duration * SECS_IN_MIN)
     start_time = time.time()
-    while time.time() - start_time < duration_time_secs:
-        print(time.strftime('\r%H:%M:%S', time.gmtime(duration_time_secs - time.time() + start_time)), end='')
+    while True:
+        timer_left = time.time() - start_time
+        if timer_left % 1 == 0:
+            print(time.strftime('\r%H:%M:%S', time.gmtime(timer_duration - timer_left)), end='')
+        if timer_left >= timer_duration:
+            break
     print()
     if audio:
         pygame.mixer.music.play()
@@ -38,7 +44,7 @@ if __name__ == '__main__':
 
     print('Welcome to Pomodoro App!')
     print(f'The following options were chosen: focus duration is {focus_duration}, '
-              f'short break duration is {short_break_duration} and long break duration is {long_break_duration}')
+          f'short break duration is {short_break_duration} and long break duration is {long_break_duration}')
     while True:
         for i in range(POMODOROS_IN_SET):
             if i != 0:
