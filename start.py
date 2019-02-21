@@ -1,4 +1,4 @@
-# take 5 (w/ sound) - not async
+# take 5 - async
 import sys
 import time
 import pygame
@@ -6,10 +6,11 @@ import math
 
 DEFAULT_FOCUS_DURATION = 25.0
 DEFAULT_SHORT_BREAK_DURATION = 5.0
-DEFAULT_LONG_BREAK_DURATION = 20.0
-SECS_IN_MIN = 60 
+DEFAULT_LONG_BREAK_DURATION = 30.0
 
 POMODOROS_IN_SET = 4
+
+SECS_IN_MIN = 60
 
 def parse_args(argv):
     argc = len(argv)
@@ -19,29 +20,12 @@ def parse_args(argv):
            DEFAULT_SHORT_BREAK_DURATION if argc < 3 else float(argv[2]),\
            DEFAULT_LONG_BREAK_DURATION if argc < 4 else float(argv[3])
 
-def start_interval(duration, audio, eps=0.001):
-    timer_duration = math.floor(duration * SECS_IN_MIN)
-    last_sec_check_time = -1
-    change_text = False
-    start_time = time.time()
-    while True:
-        timer_left = time.time() - start_time
-        if timer_left >= timer_duration:
-            break
-        if timer_left % 1 < eps:
-            if timer_left - last_sec_check_time > eps:
-                change_text = True
-                last_sec_check_time = timer_left
-            if change_text:
-                # I don't use here timer_left but take current time instead because we captured it
-                # when it actually didn't change (since the last second)
-                print(time.strftime('\r%H:%M:%S', time.gmtime(timer_duration - time.time() + start_time)), end='')
-                change_text = False
+def start_interval(duration, audio):
+    for i in range(int(duration * SECS_IN_MIN), -1, -1):
+        print(time.strftime('\r%H:%M:%S', time.gmtime(i)), end='')    
+        time.sleep(1)
     print()
-    if audio:
-        pygame.mixer.music.play()
 
-     
 if __name__ == '__main__':
     focus_duration, short_break_duration, long_break_duration = parse_args(sys.argv)
     audio = True
