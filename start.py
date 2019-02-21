@@ -1,4 +1,4 @@
-# take 5 - async
+# take 6 - async (w/ sound)
 import sys
 import time
 import pygame
@@ -25,6 +25,8 @@ def start_interval(duration, audio):
         print(time.strftime('\r%H:%M:%S', time.gmtime(i)), end='')    
         time.sleep(1)
     print()
+    if audio:
+        pygame.mixer.music.play()
 
 if __name__ == '__main__':
     focus_duration, short_break_duration, long_break_duration = parse_args(sys.argv)
