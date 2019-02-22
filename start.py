@@ -1,8 +1,9 @@
-# take 6 - async (w/ sound)
+# take 7 - async (w/ blocking)
 import sys
 import time
 import pygame
 import math
+import blocker.blocker as blocker
 
 DEFAULT_FOCUS_DURATION = 25.0
 DEFAULT_SHORT_BREAK_DURATION = 5.0
@@ -28,6 +29,23 @@ def start_interval(duration, audio):
     if audio:
         pygame.mixer.music.play()
 
+def start_pomodoro(duration, audio, block, number):
+    print(f"Pomodoro #{number}")
+    if block:
+        blocker.block()
+    start_interval(duration, audio)
+    pomodoro_ended = time.time()
+    input("Have you ended? (Press ENTER)")
+    overtime = time.time() - pomodoro_ended
+    if block:
+        blocker.unblock()
+    return overtime / SECS_IN_MIN
+
+def start_break(duration, long_duration, audio, number):
+    long_break = number == POMODOROS_IN_SET
+    print(f"Break #{number}" if not long_break else f"Long break!")
+    start_interval(duration if not long_break else long_duration, audio)
+
 if __name__ == '__main__':
     focus_duration, short_break_duration, long_break_duration = parse_args(sys.argv)
     audio = True
@@ -36,19 +54,20 @@ if __name__ == '__main__':
         pygame.mixer.music.load('uniphone.wav')
     except pygame.error:
         audio = False
+    block = True
+    try:
+        blocker.block()
+        blocker.unblock()
+    except FileNotFoundError:
+        block = False
 
     print('Welcome to Pomodoro App!')
     print(f'The following options were chosen: focus duration is {focus_duration}, '
           f'short break duration is {short_break_duration} and long break duration is {long_break_duration}')
     while True:
         for i in range(POMODOROS_IN_SET):
-            if i != 0:
-                print(f'Break #{i}')
-                start_interval(short_break_duration, audio)
-            print(f'Pomodoro #{i + 1}')
-            start_interval(focus_duration, audio)
-        print('Long break!')
-        start_interval(long_break_duration, audio)
+            overtime = start_pomodoro(focus_duration, audio, block, i + 1)
+            start_break(short_break_duration - overtime, long_break_duration - overtime, audio, i + 1) 
         if input('Another one? (y/any other key)\n') != 'y':
             print('Good day!') 
             break
