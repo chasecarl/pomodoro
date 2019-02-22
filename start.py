@@ -44,6 +44,9 @@ def start_pomodoro(duration, audio, block, number):
 def start_break(duration, long_duration, audio, number):
     long_break = number == POMODOROS_IN_SET
     print(f"Break #{number}" if not long_break else f"Long break!")
+    if duration <= 0:
+        print("You're studying too hard! Have a break already!")
+        return
     start_interval(duration if not long_break else long_duration, audio)
 
 if __name__ == '__main__':
