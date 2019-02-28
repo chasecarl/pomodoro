@@ -1,9 +1,13 @@
 # take 7 - async (w/ blocking)
 import sys
+sys.path.insert(0, './blocker')
 import time
-import pygame
 import math
-import blocker.blocker as blocker
+
+import pygame
+
+import blocker
+import config
 
 DEFAULT_FOCUS_DURATION = 25.0
 DEFAULT_SHORT_BREAK_DURATION = 5.0
@@ -57,12 +61,15 @@ if __name__ == '__main__':
         pygame.mixer.music.load('uniphone.wav')
     except pygame.error:
         audio = False
+    # damn
     block = True
-    try:
-        blocker.block()
-        blocker.unblock()
-    except FileNotFoundError:
-        block = False
+    # try:
+    #    blocker.block()
+    #    blocker.unblock()
+    # except FileNotFoundError:
+    #    block = False
+    # need to change that var names...
+    blocked = config.load_configuration()
 
     print('Welcome to Pomodoro App!')
     print(f'The following options were chosen: focus duration is {focus_duration}, '
@@ -73,5 +80,7 @@ if __name__ == '__main__':
             start_break(short_break_duration - overtime, long_break_duration - overtime, audio, i + 1) 
         if input('Another one? (y/any other key)\n') != 'y':
             print('Good day!') 
+            if blocked:
+                blocker.block()
             break
 
